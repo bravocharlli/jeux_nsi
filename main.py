@@ -1,6 +1,5 @@
 # Example file showing a circle moving on screen
 from player import *
-from carte import *
 
 # pygame setup
 pygame.init()
@@ -25,19 +24,8 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill([125, 125, 125])
 
-    """
-    for i in range(cartey):
-        for j in range(cartex):
-            if carte[i][j] == 1:
-                color = [255, 255, 255]
-            else:
-                color = [50, 50, 50]
-
-            pygame.draw.rect(screen, color, [j * 64, i * 64, 63, 63])
-    """
-
     player.update(dt)
-    player.colision(dt)
+    player.collision(dt)
     player.draw(screen)
 
     # flip() the display to put your work on screen
