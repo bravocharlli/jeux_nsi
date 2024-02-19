@@ -26,11 +26,11 @@ class Player:
             self.pos.x -= self.dx * dt
             self.pos.y -= self.dy * dt
         if keys[pygame.K_LEFT]:
-            self.angle -= 0.05
+            self.angle -= 3 * dt
             self.dx = math.cos(self.angle) * self.speed
             self.dy = math.sin(self.angle) * self.speed
         if keys[pygame.K_RIGHT]:
-            self.angle += 0.05
+            self.angle += 3 * dt
             self.dx = math.cos(self.angle) * self.speed
             self.dy = math.sin(self.angle) * self.speed
         if self.angle < 0:
@@ -200,13 +200,15 @@ class Player:
                 ca += 2 * math.pi
 
             distf = distf * math.cos(ca)
-            lineh = (tille * 400) / distf
+            lineh = (tille * 720) / distf
 
-            if lineh > 400:
-                lineh = 400
-            lineo = 200 - lineh / 2
+            if lineh > 720:
+                lineh = 720
+            lineo = 360 - lineh / 2
 
-            pygame.draw.rect(screen, [75 + p, 75 + p, 75 + p], [714 - r * 6, lineo, 6, lineh])
+            for i in range(int(lineh)):
+                pygame.draw.rect(screen, [75 + p, 75 + p, 75 + p], [1200 - r * 10, lineo+i, 10, 1])
+
 
 
 def dist(sx, sy, ex, ey):
