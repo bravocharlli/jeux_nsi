@@ -2,7 +2,7 @@
 from player import *
 
 # pygame setup*
-# vincent était ici
+# vincent était ici!!!
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
