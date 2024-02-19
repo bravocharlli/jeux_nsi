@@ -104,18 +104,19 @@ class Player:
                 ch = 1
                 yo = -tille
                 xo = -yo * ata
-            elif ra < math.pi:
+
+            if ra < math.pi:
                 ata = -1 / math.tan(ra)
                 ry = (int(self.pos.y / tille)) * tille + tille
                 rx = (self.pos.y - ry) * ata + self.pos.x
                 ch = 0
                 yo = tille
                 xo = -yo * ata
-            else:
+
+            if 0 == ra or ra == math.pi:
                 ch = 0
                 ry = self.pos.y
                 rx = self.pos.x
-                dof = 12
 
             while dof < 10:
                 mx = int(rx / tille)
@@ -149,18 +150,19 @@ class Player:
                 cv = 1
                 xo = -tille
                 yo = -xo * nta
-            elif ra < math.pi / 2 or ra > (3 * math.pi) / 2:
+
+            if ra < math.pi / 2 or ra > (3 * math.pi) / 2:
                 nta = -math.tan(ra)
                 rx = (int(self.pos.x / tille)) * tille + tille
                 ry = (self.pos.x - rx) * nta + self.pos.y
                 cv = 0
                 xo = tille
                 yo = -xo * nta
-            else:
+
+            if ra == math.pi / 2 or ra == (3 * math.pi) / 2:
                 cv = 0
                 rx = self.pos.x
                 ry = self.pos.y
-                dof = 10
 
             while dof < 10:
                 mx = int(rx / tille)
