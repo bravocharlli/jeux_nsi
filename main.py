@@ -12,6 +12,13 @@ player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
 # init
 player = Player()
+font = pygame.font.SysFont("Arial", 18)
+
+
+def update_fps():
+    fps = str(int(clock.get_fps()))
+    fps_text = font.render(fps, True, pygame.Color("coral"))
+    return fps_text
 
 
 while running:
@@ -27,6 +34,8 @@ while running:
     player.update(dt)
     player.collision(dt)
     player.draw(screen)
+
+    screen.blit(update_fps(), (10, 0))
 
     # flip() the display to put your work on screen
     pygame.display.flip()

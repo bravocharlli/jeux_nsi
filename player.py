@@ -206,8 +206,8 @@ class Player:
                 lineh = 720
             lineo = 360 - lineh / 2
 
-            for i in range(int(lineh)):
-                pygame.draw.rect(screen, [75 + p, 75 + p, 75 + p], [1200 - r * 10, lineo+i, 10, 1])
+            for i in range(int(lineh/2)):
+                pygame.draw.rect(screen, [75 + p, 75 + p, 75 + p], [1200 - r * 10, lineo+(i*2), 10, 2])
 
 
 
