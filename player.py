@@ -4,6 +4,8 @@ from carte import *
 from texture import *
 
 
+BLACK = [0, 0, 0]
+
 class Player:
     def __init__(self):
         self.pos = pygame.Vector2(100, 100)
@@ -11,6 +13,10 @@ class Player:
         self.speed = 500
         self.dx = math.cos(self.angle) * self.speed
         self.dy = math.sin(self.angle) * self.speed
+
+        # sprite_sheet c'est la texture du mur qu'il faut redécouper
+        sprite_sheet_image = pygame.image.load('resource/img.png').convert_alpha()
+        self.sprite_sheet = SpriteSheet(sprite_sheet_image)
 
     def update(self, dt):
         """
@@ -79,9 +85,9 @@ class Player:
         """
 
         # parcour de tout les rayon dans le champ de vision
-        for r in range(120):
+        for r in range(1200):
             # calcule l'angle du rayon et le borne entre 0 et 2pi
-            ra = self.angle - ((r * (math.pi / 360)) - 0.4)
+            ra = self.angle - ((r * (math.pi / 3600)) - 0.4)
             if ra < 0:
                 ra += 2 * math.pi
             if ra > 2 * math.pi:
@@ -212,12 +218,19 @@ class Player:
 
             distf = distf * math.cos(ca)
             lineh = (tille * 720) / distf
+            lineh1 = lineh
+            lineo = 360 - lineh / 2
 
             if lineh > 720:
                 lineh = 720
-            lineo = 360 - lineh / 2
 
-            pygame.draw.rect(screen, [ofset*(25/8) + p, ofset*(25/8) + p, ofset*(25/8) + p], [1200 - r * 10, lineo, 10, lineh])
+
+            if r > 75:
+                pass
+            texture = self.sprite_sheet.get_image(ofset, 1, lineh1)
+            screen.blit(texture, (1200 - r, lineo))
+
+            # pygame.draw.rect(screen, [ofset*(25/8) + p, ofset*(25/8) + p, ofset*(25/8) + p], [1200 - r * 10, lineo, 10, lineh])
 
 
 def dist(sx, sy, ex, ey):
