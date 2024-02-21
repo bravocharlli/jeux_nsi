@@ -1,7 +1,10 @@
 import pygame
 import math
 from carte import *
+from texture import *
 
+
+BLACK = [0, 0, 0]
 
 class Player:
     def __init__(self):
@@ -10,6 +13,10 @@ class Player:
         self.speed = 500
         self.dx = math.cos(self.angle) * self.speed
         self.dy = math.sin(self.angle) * self.speed
+
+        # sprite_sheet c'est la texture du mur qu'il faut redécouper
+        sprite_sheet_image = pygame.image.load('resource/img.png').convert_alpha()
+        self.sprite_sheet = SpriteSheet(sprite_sheet_image)
 
     def update(self, dt):
         """
@@ -77,8 +84,10 @@ class Player:
         :return:
         """
 
-        for r in range(120):
-            ra = self.angle - ((r * (math.pi / 360)) - 0.4)
+        # parcour de tout les rayon dans le champ de vision
+        for r in range(1200):
+            # calcule l'angle du rayon et le borne entre 0 et 2pi
+            ra = self.angle - ((r * (math.pi / 3600)) - 0.4)
             if ra < 0:
                 ra += 2 * math.pi
             if ra > 2 * math.pi:
@@ -97,6 +106,7 @@ class Player:
             hx = self.pos.x
             hy = self.pos.y
 
+            # regarde en bas
             if ra > math.pi:
                 ata = -1 / math.tan(ra)
                 ry = (int(self.pos.y / tille)) * tille  # rx et ry sont les coordonnées de
@@ -105,6 +115,7 @@ class Player:
                 yo = -tille
                 xo = -yo * ata
 
+            # regarde en haut
             if ra < math.pi:
                 ata = -1 / math.tan(ra)
                 ry = (int(self.pos.y / tille)) * tille + tille
@@ -143,6 +154,8 @@ class Player:
             vy = self.pos.y
             dof = 0
             cv = 0
+
+            # regarde à gauche
             if math.pi / 2 < ra < (3 * math.pi) / 2:
                 nta = -math.tan(ra)
                 rx = (int(self.pos.x / tille)) * tille
@@ -151,6 +164,7 @@ class Player:
                 xo = -tille
                 yo = -xo * nta
 
+            # regarde à droite
             if ra < math.pi / 2 or ra > (3 * math.pi) / 2:
                 nta = -math.tan(ra)
                 rx = (int(self.pos.x / tille)) * tille + tille
@@ -180,16 +194,19 @@ class Player:
                 else:
                     dof = 10
 
+            # garde-les valeurs du mur le plus proche
             distf = 1
             p = 0
             if distv < disth:
                 rx = vx
                 ry = vy
+                ofset = ry % tille if ra < math.pi / 2 or ra > (3 * math.pi) / 2 else tille - (ry % tille)
                 distf = distv
                 p = 25
-            elif distv >= disth:
+            else:
                 rx = hx
                 ry = hy
+                ofset = rx % tille if ra > math.pi else tille - (rx % tille)
                 distf = disth
                 p = 0
 
@@ -201,13 +218,19 @@ class Player:
 
             distf = distf * math.cos(ca)
             lineh = (tille * 720) / distf
+            lineh1 = lineh
+            lineo = 360 - lineh / 2
 
             if lineh > 720:
                 lineh = 720
-            lineo = 360 - lineh / 2
 
-            for i in range(int(lineh/2)):
-                pygame.draw.rect(screen, [75 + p, 75 + p, 75 + p], [1200 - r * 10, lineo+(i*2), 10, 2])
+
+            if r > 75:
+                pass
+            texture = self.sprite_sheet.get_image(ofset, 1, lineh1)
+            screen.blit(texture, (1200 - r, lineo))
+
+            # pygame.draw.rect(screen, [ofset*(25/8) + p, ofset*(25/8) + p, ofset*(25/8) + p], [1200 - r * 10, lineo, 10, lineh])
 
 
 def dist(sx, sy, ex, ey):
