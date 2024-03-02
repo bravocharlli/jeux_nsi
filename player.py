@@ -9,6 +9,7 @@ BLACK = [0, 0, 0]
 class Player:
     def __init__(self):
         self.pos = pygame.Vector2(100, 100)
+        self.pos_z = 32
         self.angle = 0
         self.speed = 500
         self.dx = math.cos(self.angle) * self.speed
@@ -243,8 +244,17 @@ class Player:
 
         return param
 
+    def calcul_sol(self):
+        for ecran_y in range(361, 720):
+            y = ecran_y - 360
+            x = 32 / y
+            for ecran_x in range(1200):
+                dy = ecran_x * x
+
+
     def draw(self, screen):
         param = self.calcul_mur()
+        param_sol = self.calcul_sol()
 
         for r in range(len(param)):
             type_mur = param[r][0]
