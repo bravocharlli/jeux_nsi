@@ -87,7 +87,7 @@ class Player:
             if carte[ipy_sub_yo][ipx] == 1:
                 self.pos.y += self.dy * dt
 
-    def draw(self, screen):
+    def calcul_mur(self):
         """
         Dessine se que le personnage voit
         :param screen:
@@ -95,6 +95,7 @@ class Player:
         """
 
         # parcour de tout les rayon dans le champ de vision
+        param = []
         for r in range(1200):
             # calcule l'angle du rayon et le borne entre 0 et 2pi
             ra = self.angle - ((r * (math.pi / 3600)) - 0.4)
@@ -203,7 +204,7 @@ class Player:
                         vx = rx
                         vy = ry
                         distv = dist(self.pos.x, self.pos.y, vx, vy)
-                        type_mur_v = carte[my - ch][mx]
+                        type_mur_v = carte[my][mx - cv]
                     else:
                         rx += xo
                         ry += yo
@@ -238,7 +239,22 @@ class Player:
             lineh = (tille * 720) / distf
             lineo = 360 - lineh / 2
 
-            texture = self.sprite_sheet_mur.get_image(ofset, 1, lineh)
+            param.append([type_mur, ofset, lineh, lineo])
+
+        return param
+
+    def draw(self, screen):
+        param = self.calcul_mur()
+
+        for r in range(len(param)):
+            type_mur = param[r][0]
+            ofset = param[r][1]
+            lineh = param[r][2]
+            lineo = param[r][3]
+            if type_mur == 1:
+                texture = self.sprite_sheet_mur.get_image(ofset, 1, lineh)
+            else:
+                texture = self.sprite_sheet_mur_mouse.get_image(ofset, 1, lineh)
             screen.blit(texture, (1200 - r, lineo))
 
 
