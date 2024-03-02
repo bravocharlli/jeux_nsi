@@ -6,11 +6,13 @@ class SpriteSheet:
         self.sheet = image
 
     def get_image(self, origine, taille_de_bande, hauteur, colour=None):
-        image = pygame.Surface((taille_de_bande, 225)).convert_alpha()
-        image.blit(self.sheet, (0, 0), (origine*(225/64), 0, origine*(225/64)+taille_de_bande, 225))
+        # crée une image vide
+        image = pygame.Surface((taille_de_bande, 16)).convert_alpha()
+        # destine la texture
+        image.blit(self.sheet, (0, 0), (origine*(16/64), 0, origine*(16/64)+taille_de_bande, 16))
+        # modifie la taille de l'image
         image = pygame.transform.scale(image, (taille_de_bande, hauteur))
+        # enlève une certaine couleur
         image.set_colorkey(colour)
-        if taille_de_bande > 20:
-            raise IndexError
 
         return image
