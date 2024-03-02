@@ -85,9 +85,9 @@ class Player:
         """
 
         # parcour de tout les rayon dans le champ de vision
-        for r in range(600):
+        for r in range(1200):
             # calcule l'angle du rayon et le borne entre 0 et 2pi
-            ra = self.angle - ((r * (math.pi / 1800)) - 0.4)
+            ra = self.angle - ((r * (math.pi / 3600)) - 0.4)
             if ra < 0:
                 ra += 2 * math.pi
             if ra > 2 * math.pi:
@@ -202,7 +202,7 @@ class Player:
                 ry = vy
                 ofset = ry % tille if ra < math.pi / 2 or ra > (3 * math.pi) / 2 else tille - (ry % tille)
                 distf = distv
-                p = 25
+                p = 1
             else:
                 rx = hx
                 ry = hy
@@ -218,19 +218,10 @@ class Player:
 
             distf = distf * math.cos(ca)
             lineh = (tille * 720) / distf
-            lineh1 = lineh
             lineo = 360 - lineh / 2
 
-            if lineh > 720:
-                lineh = 720
-
-
-            if r > 75:
-                pass
-            texture = self.sprite_sheet.get_image(ofset, 2, lineh1)
-            screen.blit(texture, (1200 - r*2, lineo))
-
-            # pygame.draw.rect(screen, [ofset*(25/8) + p, ofset*(25/8) + p, ofset*(25/8) + p], [1200 - r * 10, lineo, 10, lineh])
+            texture = self.sprite_sheet.get_image(ofset, 2, lineh)
+            screen.blit(texture, (1200 - r, lineo))
 
 
 def dist(sx, sy, ex, ey):
