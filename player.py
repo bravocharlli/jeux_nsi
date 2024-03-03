@@ -1,24 +1,35 @@
-import pygame
 import math
+import matplotlib.image as mpimg
 from carte import *
 from texture import *
 
 
 BLACK = [0, 0, 0]
 
+
 class Player:
     def __init__(self):
         self.pos = pygame.Vector2(100, 100)
+        self.pos_z = 32
         self.angle = 0
         self.speed = 500
         self.dx = math.cos(self.angle) * self.speed
         self.dy = math.sin(self.angle) * self.speed
 
         # sprite_sheet c'est la texture du mur qu'il faut redécouper
-        sprite_sheet_image = pygame.image.load('resource/img.png').convert_alpha()
-        self.sprite_sheet = SpriteSheet(sprite_sheet_image)
+        sprite_sheet_image_mur = pygame.image.load('resource/murs.png').convert_alpha()
+        sprite_sheet_image_mur_mouse = pygame.image.load('resource/murs_en_mousse.png').convert_alpha()
+        self.sprite_sheet_mur = SpriteSheet(sprite_sheet_image_mur)
+        self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
+
+        # sol
+        self.sol = mpimg.imread('resource/murs.png')
 
     def update(self, dt):
+        self.move(dt)
+        self.collision(dt)
+
+    def move(self, dt):
         """
         Modifie la position et l’angle en fonction des touches
         :param dt:
@@ -32,6 +43,7 @@ class Player:
         if keys[pygame.K_DOWN]:
             self.pos.x -= self.dx * dt
             self.pos.y -= self.dy * dt
+
         if keys[pygame.K_LEFT]:
             self.angle -= 3 * dt
             self.dx = math.cos(self.angle) * self.speed
@@ -40,6 +52,7 @@ class Player:
             self.angle += 3 * dt
             self.dx = math.cos(self.angle) * self.speed
             self.dy = math.sin(self.angle) * self.speed
+
         if self.angle < 0:
             self.angle += 2 * math.pi
         if self.angle > 2 * math.pi:
@@ -60,12 +73,14 @@ class Player:
             yo = -20
         else:
             yo = 20
+
         ipx = int(self.pos.x / tille)
         ipy = int(self.pos.y / tille)
         ipx_add_xo = int((self.pos.x + xo) / tille)
         ipy_add_yo = int((self.pos.y + yo) / tille)
         ipx_sub_xo = int((self.pos.x - xo) / tille)
         ipy_sub_yo = int((self.pos.y - yo) / tille)
+
         if keys[pygame.K_UP]:
             if carte[ipy][ipx_add_xo] == 1:
                 self.pos.x -= self.dx * dt
@@ -77,14 +92,14 @@ class Player:
             if carte[ipy_sub_yo][ipx] == 1:
                 self.pos.y += self.dy * dt
 
-    def draw(self, screen):
+    def calcul_mur(self, screen):
         """
-        Dessine le personnage et se qu'il voit
-        :param screen:
+        Dessine se que le personnage voit
         :return:
         """
 
         # parcour de tout les rayon dans le champ de vision
+        param = []
         for r in range(1200):
             # calcule l'angle du rayon et le borne entre 0 et 2pi
             ra = self.angle - ((r * (math.pi / 3600)) - 0.4)
@@ -93,10 +108,15 @@ class Player:
             if ra > 2 * math.pi:
                 ra -= 2 * math.pi
 
+            # init var
+            type_mur_h = 0
+            type_mur_v = 0
+
             # ___________________________________________________________________________________________________
             # mur horizontal                                                                                      |
             # ____________________________________________________________________________________________________
 
+            # init var
             dof = 0
             xo, yo = 0, 0
             rx, ry = 0, 0
@@ -116,7 +136,7 @@ class Player:
                 xo = -yo * ata
 
             # regarde en haut
-            if ra < math.pi:
+            elif ra < math.pi:
                 ata = -1 / math.tan(ra)
                 ry = (int(self.pos.y / tille)) * tille + tille
                 rx = (self.pos.y - ry) * ata + self.pos.x
@@ -124,7 +144,7 @@ class Player:
                 yo = tille
                 xo = -yo * ata
 
-            if 0 == ra or ra == math.pi:
+            elif 0 == ra or ra == math.pi:
                 ch = 0
                 ry = self.pos.y
                 rx = self.pos.x
@@ -138,6 +158,7 @@ class Player:
                         hx = rx
                         hy = ry
                         disth = dist(self.pos.x, self.pos.y, hx, hy)
+                        type_mur_h = carte[my - ch][mx]
                     else:
                         rx += xo
                         ry += yo
@@ -187,6 +208,7 @@ class Player:
                         vx = rx
                         vy = ry
                         distv = dist(self.pos.x, self.pos.y, vx, vy)
+                        type_mur_v = carte[my][mx - cv]
                     else:
                         rx += xo
                         ry += yo
@@ -195,19 +217,20 @@ class Player:
                     dof = 10
 
             # garde-les valeurs du mur le plus proche
-            distf = 1
             p = 0
             if distv < disth:
                 rx = vx
                 ry = vy
                 ofset = ry % tille if ra < math.pi / 2 or ra > (3 * math.pi) / 2 else tille - (ry % tille)
                 distf = distv
+                type_mur = type_mur_v
                 p = 1
             else:
                 rx = hx
                 ry = hy
                 ofset = rx % tille if ra > math.pi else tille - (rx % tille)
                 distf = disth
+                type_mur = type_mur_h
                 p = 0
 
             ca = self.angle - ra
@@ -220,9 +243,31 @@ class Player:
             lineh = (tille * 720) / distf
             lineo = 360 - lineh / 2
 
-            texture = self.sprite_sheet.get_image(ofset, 2, lineh)
+            # enregistrement des valeurs calculé
+            param.append([type_mur, ofset, lineh, lineo])
+        return param
+
+    def draw(self, screen):
+        param = self.calcul_mur(screen)
+
+        for r in range(len(param)):
+            type_mur = param[r][0]
+            ofset = param[r][1]
+            lineh = param[r][2]
+            lineo = param[r][3]
+            if type_mur == 1:
+                texture = self.sprite_sheet_mur.get_image(ofset, 1, lineh)
+            else:
+                texture = self.sprite_sheet_mur_mouse.get_image(ofset, 1, lineh)
             screen.blit(texture, (1200 - r, lineo))
 
+
+def fixang(a):
+    if a > 359:
+        a -= 360
+    if a < 0:
+        a += 360
+    return a
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)

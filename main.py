@@ -1,15 +1,12 @@
 # Example file showing a circle moving on screen
 from player import *
 
-# pygame setup*
-# vincent était ici!!!
+# pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((1200, 720))
 clock = pygame.time.Clock()
 running = True
 dt = 0
-
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
 # init
 player = Player()
@@ -33,9 +30,9 @@ while running:
     screen.fill([125, 125, 125])
 
     player.update(dt)
-    player.collision(dt)
     player.draw(screen)
 
+    # affichage fps
     screen.blit(update_fps(), (10, 0))
 
     # flip() the display to put your work on screen
