@@ -1,4 +1,5 @@
 import math
+import matplotlib.image as mpimg
 from carte import *
 from texture import *
 
@@ -20,6 +21,9 @@ class Player:
         sprite_sheet_image_mur_mouse = pygame.image.load('resource/murs_en_mousse.png').convert_alpha()
         self.sprite_sheet_mur = SpriteSheet(sprite_sheet_image_mur)
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
+
+        # sol
+        self.sol = mpimg.imread('resource/murs.png')
 
     def update(self, dt):
         self.move(dt)
@@ -88,10 +92,9 @@ class Player:
             if carte[ipy_sub_yo][ipx] == 1:
                 self.pos.y += self.dy * dt
 
-    def calcul_mur(self):
+    def calcul_mur(self, screen):
         """
         Dessine se que le personnage voit
-        :param screen:
         :return:
         """
 
@@ -133,7 +136,7 @@ class Player:
                 xo = -yo * ata
 
             # regarde en haut
-            if ra < math.pi:
+            elif ra < math.pi:
                 ata = -1 / math.tan(ra)
                 ry = (int(self.pos.y / tille)) * tille + tille
                 rx = (self.pos.y - ry) * ata + self.pos.x
@@ -141,7 +144,7 @@ class Player:
                 yo = tille
                 xo = -yo * ata
 
-            if 0 == ra or ra == math.pi:
+            elif 0 == ra or ra == math.pi:
                 ch = 0
                 ry = self.pos.y
                 rx = self.pos.x
@@ -240,21 +243,12 @@ class Player:
             lineh = (tille * 720) / distf
             lineo = 360 - lineh / 2
 
+            # enregistrement des valeurs calculé
             param.append([type_mur, ofset, lineh, lineo])
-
         return param
 
-    def calcul_sol(self):
-        for ecran_y in range(361, 720):
-            y = ecran_y - 360
-            x = 32 / y
-            for ecran_x in range(1200):
-                dy = ecran_x * x
-
-
     def draw(self, screen):
-        param = self.calcul_mur()
-        param_sol = self.calcul_sol()
+        param = self.calcul_mur(screen)
 
         for r in range(len(param)):
             type_mur = param[r][0]
@@ -267,6 +261,13 @@ class Player:
                 texture = self.sprite_sheet_mur_mouse.get_image(ofset, 1, lineh)
             screen.blit(texture, (1200 - r, lineo))
 
+
+def fixang(a):
+    if a > 359:
+        a -= 360
+    if a < 0:
+        a += 360
+    return a
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
