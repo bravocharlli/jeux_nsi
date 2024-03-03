@@ -22,13 +22,13 @@ class Object:
     def __init__(self, image):
         self.sheet = image
 
-    def get_image(self, scale, colour):
+    def get_image(self, taille, colour):
         # crée une image vide
         image = pygame.Surface((16, 16)).convert_alpha()
         # destine la texture
         image.blit(self.sheet, (0, 0), (0, 0, 16, 16))
         # modifie la taille de l'image
-        image = pygame.transform.scale(image, (scale, scale))
+        image = pygame.transform.scale(image, (taille, taille))
         # enlève une certaine couleur
         image.set_colorkey(colour)
 

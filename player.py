@@ -24,7 +24,7 @@ class Player:
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
 
         # object
-        self.objet = enemy.Object(250, 250)
+        self.objet = enemy.Object(7*64, 7*64)
 
     def update(self, dt):
         self.move(dt)
@@ -103,7 +103,7 @@ class Player:
         param = []
         for r in range(1200):
             # calcule l'angle du rayon et le borne entre 0 et 2pi
-            ra = self.angle - ((r * (math.pi / 3600)) - 0.4)
+            ra = self.angle - ((r * (math.pi / 3600)) - math.pi/6)
             if ra < 0:
                 ra += 2 * math.pi
             if ra > 2 * math.pi:
