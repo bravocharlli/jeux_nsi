@@ -10,26 +10,18 @@ class Object:
         self.texture = texture.Object(sprite)
 
     def draw(self, screen, param, ppos, pang):
-        dy = ppos.y-self.pos.y
-        dx = ppos.x-self.pos.x
         # get angle
-        angle = math.atan(dy/dx)
+        angle = math.atan2(ppos.y-self.pos.y, ppos.x-self.pos.x)
         diff = pang - angle
 
-        if diff < 0:
-            diff += 2 * math.pi
-        elif diff > 2 * math.pi:
-            diff -= 2 * math.pi
+        diff = correction_ang(diff)
 
-        if diff < 0:
-            render = False
-        else:
+        if abs(diff) > math.pi/4:
             render = True
+        else:
+            render = False
 
-        print(diff)
-
-
-        if True:
+        if render:
             screen_x = 0.5 * 1200 * (1-(math.tan(diff)/math.tan(math.pi/6)))
 
             # get distance
@@ -42,3 +34,11 @@ class Object:
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
+
+
+def correction_ang(ang):
+    if ang < 0:
+        ang += 2 * math.pi
+    elif ang > 2 * math.pi:
+        ang -= 2 * math.pi
+    return ang
