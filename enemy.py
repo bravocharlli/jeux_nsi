@@ -16,7 +16,7 @@ class Object:
 
         diff = correction_ang(diff)
 
-        if abs(diff) > math.pi/4:
+        if abs(diff) > math.pi/2:
             render = True
         else:
             render = False
@@ -37,8 +37,8 @@ def dist(sx, sy, ex, ey):
 
 
 def correction_ang(ang):
-    if ang < 0:
+    if ang < -math.pi:
         ang += 2 * math.pi
-    elif ang > 2 * math.pi:
+    if ang > math.pi:
         ang -= 2 * math.pi
     return ang
