@@ -92,7 +92,7 @@ class Player:
             if carte[ipy_sub_yo][ipx] == 1:
                 self.pos.y += self.dy * dt
 
-    def calcul_mur(self, screen):
+    def calcul_mur(self):
         """
         Dessine se que le personnage voit
         :return:
@@ -244,11 +244,11 @@ class Player:
             lineo = 360 - lineh / 2
 
             # enregistrement des valeurs calculé
-            param.append([type_mur, ofset, lineh, lineo])
+            param.append([type_mur, ofset, lineh, lineo, distf])
         return param
 
     def draw(self, screen):
-        param = self.calcul_mur(screen)
+        param = self.calcul_mur()
 
         for r in range(len(param)):
             type_mur = param[r][0]
@@ -261,13 +261,6 @@ class Player:
                 texture = self.sprite_sheet_mur_mouse.get_image(ofset, 1, lineh)
             screen.blit(texture, (1200 - r, lineo))
 
-
-def fixang(a):
-    if a > 359:
-        a -= 360
-    if a < 0:
-        a += 360
-    return a
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
