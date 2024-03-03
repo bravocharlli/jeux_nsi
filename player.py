@@ -18,8 +18,8 @@ class Player:
         self.dy = math.sin(self.angle) * self.speed
 
         # sprite_sheet c'est la texture du mur qu'il faut redécouper
-        sprite_sheet_image_mur = pygame.image.load('resource/murs.png').convert_alpha()
-        sprite_sheet_image_mur_mouse = pygame.image.load('resource/murs_en_mousse.png').convert_alpha()
+        sprite_sheet_image_mur = pygame.image.load('resource/mur.png').convert_alpha()
+        sprite_sheet_image_mur_mouse = pygame.image.load('resource/mur_mousse.png').convert_alpha()
         self.sprite_sheet_mur = SpriteSheet(sprite_sheet_image_mur)
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
 
