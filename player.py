@@ -24,7 +24,7 @@ class Player:
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
 
         # object
-        self.objet = enemy.Object(250, 250, 10)
+        self.objet = enemy.Object(250, 250)
 
     def update(self, dt):
         self.move(dt)
