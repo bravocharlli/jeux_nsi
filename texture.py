@@ -16,3 +16,20 @@ class SpriteSheet:
         image.set_colorkey(colour)
 
         return image
+
+
+class Object:
+    def __init__(self, image):
+        self.sheet = image
+
+    def get_image(self, scale, colour):
+        # crée une image vide
+        image = pygame.Surface((16, 16)).convert_alpha()
+        # destine la texture
+        image.blit(self.sheet, (0, 0), (0, 0, 16, 16))
+        # modifie la taille de l'image
+        image = pygame.transform.scale(image, (scale, scale))
+        # enlève une certaine couleur
+        image.set_colorkey(colour)
+
+        return image

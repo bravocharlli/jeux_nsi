@@ -1,5 +1,6 @@
 import math
 import matplotlib.image as mpimg
+import enemy
 from carte import *
 from texture import *
 
@@ -22,8 +23,8 @@ class Player:
         self.sprite_sheet_mur = SpriteSheet(sprite_sheet_image_mur)
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
 
-        # sol
-        self.sol = mpimg.imread('resource/murs.png')
+        # object
+        self.objet = enemy.Object(250, 250, 10)
 
     def update(self, dt):
         self.move(dt)
@@ -82,14 +83,14 @@ class Player:
         ipy_sub_yo = int((self.pos.y - yo) / tille)
 
         if keys[pygame.K_UP]:
-            if carte[ipy][ipx_add_xo] == 1:
+            if carte[ipy][ipx_add_xo] > 0:
                 self.pos.x -= self.dx * dt
-            if carte[ipy_add_yo][ipx] == 1:
+            if carte[ipy_add_yo][ipx] > 0:
                 self.pos.y -= self.dy * dt
         if keys[pygame.K_DOWN]:
-            if carte[ipy][ipx_sub_xo] == 1:
+            if carte[ipy][ipx_sub_xo] > 0:
                 self.pos.x += self.dx * dt
-            if carte[ipy_sub_yo][ipx] == 1:
+            if carte[ipy_sub_yo][ipx] > 0:
                 self.pos.y += self.dy * dt
 
     def calcul_mur(self):
@@ -250,6 +251,7 @@ class Player:
     def draw(self, screen):
         param = self.calcul_mur()
 
+
         for r in range(len(param)):
             type_mur = param[r][0]
             ofset = param[r][1]
@@ -260,6 +262,8 @@ class Player:
             else:
                 texture = self.sprite_sheet_mur_mouse.get_image(ofset, 1, lineh)
             screen.blit(texture, (1200 - r, lineo))
+
+        self.objet.draw(screen, param, self.pos, self.angle)
 
 
 def dist(sx, sy, ex, ey):
