@@ -1,5 +1,7 @@
 import math
 import matplotlib.image as mpimg
+import pygame.mouse
+
 import enemy
 from carte import *
 from texture import *
@@ -14,6 +16,8 @@ class Player:
         self.pos_z = 32
         self.angle = 0
         self.speed = 500
+        self.tirer = 0
+        self.mouse_x = get_mouse_delta()
         self.dx = math.cos(self.angle) * self.speed
         self.dy = math.sin(self.angle) * self.speed
         self.strafe_dx = math.cos(self.angle+(math.pi/2)) * self.speed * 0.75
@@ -24,6 +28,12 @@ class Player:
         sprite_sheet_image_mur_mouse = pygame.image.load('resource/mur_mousse.png').convert_alpha()
         self.sprite_sheet_mur = SpriteSheet(sprite_sheet_image_mur)
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
+
+        sprite_sheet_pistolet_1 = pygame.image.load('resource/pistolet_1.png').convert_alpha()
+        sprite_sheet_pistolet_1_fire = pygame.image.load('resource/pistolet_1_fire.png').convert_alpha()
+        self.sprite_sheet_pistolet_1 = Object(sprite_sheet_pistolet_1)
+        self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
+
 
         self.mechants = []
         self.object = []
@@ -39,8 +49,12 @@ class Player:
                         self.object.append(enemy.Object(i * 64, j * 64, 'resource/piller.png'))
 
     def update(self, dt):
+        self.mouse_x = get_mouse_delta()
         self.move(dt)
         self.collision(dt)
+
+        if self.tirer <= 10:
+            self.tirer += dt * 50
 
     def move(self, dt):
         """
@@ -62,6 +76,13 @@ class Player:
         if keys[pygame.K_q]:
             self.pos.x -= self.strafe_dx * dt
             self.pos.y -= self.strafe_dy * dt
+
+        if self.mouse_x != 0:
+            self.angle += self.mouse_x * dt
+            self.dx = math.cos(self.angle) * self.speed
+            self.dy = math.sin(self.angle) * self.speed
+            self.strafe_dx = math.cos(self.angle + (math.pi / 2)) * self.speed * 0.75
+            self.strafe_dy = math.sin(self.angle + (math.pi / 2)) * self.speed * 0.75
 
         if keys[pygame.K_LEFT]:
             self.angle -= 3 * dt
@@ -140,7 +161,8 @@ class Player:
             if carte[ipy_add_strafe_yo][ipx] > 0:
                 self.pos.y -= self.strafe_dy * dt
 
-        if keys[pygame.K_SPACE]:
+        if pygame.mouse.get_pressed()[0] and self.tirer > 10:
+            self.tirer = 0
             for mechant in self.mechants:
                 mechant.tir(self.pos, self.angle)
 
@@ -340,7 +362,22 @@ class Player:
             screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
 
         pygame.draw.rect(screen, [0, 0, 0], [590, 350, 10, 10])
-
+        if self.tirer < 10:
+            image = self.sprite_sheet_pistolet_1_fire.get_image(60, [255, 0, 255])
+        else:
+            image = self.sprite_sheet_pistolet_1.get_image(60, [255, 0, 255])
+        screen.blit(image, (540, 660))
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
+
+
+def get_mouse_delta():
+    """
+    donne le décalage en x de la souris
+    :return x: valeur entre -60 et 60
+    """
+    x, y = pygame.mouse.get_pos()
+    pygame.mouse.set_pos(600, 360)
+    x = (x-600)/10
+    return x
