@@ -32,6 +32,7 @@ class Object:
                         param[1200 - int(screen_x)][4] > distance or
                         param[1200 - int(screen_x) + 1][4] > distance):
                     taille = ((64 * 720) / distance)
+
                     sprite = self.texture.get_image(taille, [255, 0, 255])
                     screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
 

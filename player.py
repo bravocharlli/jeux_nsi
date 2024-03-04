@@ -25,8 +25,19 @@ class Player:
         self.sprite_sheet_mur = SpriteSheet(sprite_sheet_image_mur)
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
 
-        # ennemy
-        self.mechants = [enemy.Enemy(4 * 64, 4 * 64, 'resource/monstre2.png', 'resource/monstre2_mort.png')]
+        self.mechants = []
+        self.object = []
+        # load objetct + ennemy
+        for i in range(len(carte_objet)):
+            for j in range(len(carte_objet)):
+                match carte_objet[i][j]:
+                    case 1:
+                        self.mechants.append(enemy.Enemy(i * 64, j * 64, 'resource/monstre1.png', 'resource/monstre2_mort.png'))
+                    case 2:
+                        self.mechants.append(enemy.Enemy(i * 64, j * 64, 'resource/monstre2.png', 'resource/monstre2_mort.png'))
+                    case 3:
+                        self.object.append(enemy.Object(i * 64, j * 64, 'resource/piller.png'))
+
 
     def update(self, dt):
         self.move(dt)
