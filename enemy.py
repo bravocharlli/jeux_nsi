@@ -37,10 +37,13 @@ class Object:
 
 
 class Enemy:
-    def __init__(self, x, y, path):
+    def __init__(self, x, y, path, dead_path):
         self.pos = pygame.Vector2(x, y)
         sprite = pygame.image.load(path).convert_alpha()
         self.texture = texture.Object(sprite)
+        sprite = pygame.image.load(dead_path).convert_alpha()
+        self.texture_mort = texture.Object(sprite)
+        self.state = 1
 
     def draw(self, screen, param, ppos, pang):
         # get angle
@@ -65,11 +68,21 @@ class Enemy:
                         param[1200 - int(screen_x)][4] > distance or
                         param[1200 - int(screen_x) + 1][4] > distance):
                     taille = ((64 * 720) / distance)
-                    sprite = self.texture.get_image(taille, [255, 0, 255])
-                    screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
+                    match self.state:
+                        case 1:
+                            sprite = self.texture.get_image(taille, [255, 0, 255])
+                            screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
+                        case 2:
+                            sprite = self.texture_mort.get_image(taille, [255, 0, 255])
+                            screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
 
     def tir(self, ppos, pang):
-        pass
+        a = math.tan(pang)
+        c = ppos.y - a * ppos.x
+        distance = abs((a * self.pos.x - self.pos.y + c)/math.sqrt(a**2+1))
+
+        if distance < 20:
+            self.state = 2
 
 
 def dist(sx, sy, ex, ey):

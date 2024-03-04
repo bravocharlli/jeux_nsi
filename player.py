@@ -26,7 +26,7 @@ class Player:
         self.sprite_sheet_mur_mouse = SpriteSheet(sprite_sheet_image_mur_mouse)
 
         # ennemy
-        self.mechants = [enemy.Enemy(4 * 64, 4 * 64, 'resource/monstre2.png')]
+        self.mechants = [enemy.Enemy(4 * 64, 4 * 64, 'resource/monstre2.png', 'resource/monstre2_mort.png')]
 
     def update(self, dt):
         self.move(dt)
@@ -129,7 +129,6 @@ class Player:
                 self.pos.x -= self.strafe_dx * dt
             if carte[ipy_add_strafe_yo][ipx] > 0:
                 self.pos.y -= self.strafe_dy * dt
-
 
         if keys[pygame.K_SPACE]:
             for mechant in self.mechants:
@@ -306,6 +305,8 @@ class Player:
 
         for mechant in self.mechants:
             mechant.draw(screen, param, self.pos, self.angle)
+
+        pygame.draw.rect(screen, [0, 0, 0], [590, 350, 10, 10])
 
 
 def dist(sx, sy, ex, ey):
