@@ -6,7 +6,7 @@ import math
 class Object:
     def __init__(self, x, y):
         self.pos = pygame.Vector2(x, y)
-        sprite = pygame.image.load('resource/monstre2.png').convert_alpha()
+        sprite = pygame.image.load('resource/monstre1.png').convert_alpha()
         self.texture = texture.Object(sprite)
 
     def draw(self, screen, param, ppos, pang):
@@ -28,7 +28,7 @@ class Object:
             distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
             taille = ((64 * 720) / distance)
 
-            texture = self.texture.get_image(taille, [255, 0, 249])
+            texture = self.texture.get_image(taille, [255, 0, 255])
             screen.blit(texture, (screen_x-taille/2, 360-taille/2))
 
 
