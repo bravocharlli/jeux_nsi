@@ -38,7 +38,6 @@ class Player:
                     case 3:
                         self.object.append(enemy.Object(i * 64, j * 64, 'resource/piller.png'))
 
-
     def update(self, dt):
         self.move(dt)
         self.collision(dt)
@@ -314,8 +313,31 @@ class Player:
                 texture = self.sprite_sheet_mur_mouse.get_image(ofset, 1, lineh)
             screen.blit(texture, (1200 - r, lineo))
 
+        param_sprite = []
+
         for mechant in self.mechants:
-            mechant.draw(screen, param, self.pos, self.angle)
+            param_sprite.append(mechant.calcul(screen, param, self.pos, self.angle))
+
+        for objet in self.object:
+            param_sprite.append(objet.calcul(screen, param, self.pos, self.angle))
+
+        temp = []
+        for i in range(len(param_sprite)):
+            if param_sprite[i] is not None:
+                temp.append(param_sprite[i])
+        param_sprite = temp
+
+        # try en fonction de la distance
+        for i in range(len(param_sprite)):
+            for j in range(len(param_sprite)-1):
+                if param_sprite[j][2] > param_sprite[j+1][2]:
+                    param_sprite[j], param_sprite[j+1] = param_sprite[j+1], param_sprite[j]
+
+        for i in param_sprite:
+            sprite = i[0]
+            screen_x = i[1]
+            taille = i[2]
+            screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
 
         pygame.draw.rect(screen, [0, 0, 0], [590, 350, 10, 10])
 

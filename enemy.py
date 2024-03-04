@@ -9,7 +9,7 @@ class Object:
         sprite = pygame.image.load(path).convert_alpha()
         self.texture = texture.Object(sprite)
 
-    def draw(self, screen, param, ppos, pang):
+    def calcul(self, screen, param, ppos, pang):
         # get angle
         angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x)
         diff = pang - angle
@@ -34,7 +34,7 @@ class Object:
                     taille = ((64 * 720) / distance)
 
                     sprite = self.texture.get_image(taille, [255, 0, 255])
-                    screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
+                    return [sprite, screen_x, taille]
 
 
 class Enemy:
@@ -44,9 +44,9 @@ class Enemy:
         self.texture = texture.Object(sprite)
         sprite = pygame.image.load(dead_path).convert_alpha()
         self.texture_mort = texture.Object(sprite)
-        self.state = 1
+        self.pv = 10
 
-    def draw(self, screen, param, ppos, pang):
+    def calcul(self, screen, param, ppos, pang):
         # get angle
         angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x)
         diff = pang - angle
@@ -69,21 +69,21 @@ class Enemy:
                         param[1200 - int(screen_x)][4] > distance or
                         param[1200 - int(screen_x) + 1][4] > distance):
                     taille = ((64 * 720) / distance)
-                    match self.state:
-                        case 1:
-                            sprite = self.texture.get_image(taille, [255, 0, 255])
-                            screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
-                        case 2:
-                            sprite = self.texture_mort.get_image(taille, [255, 0, 255])
-                            screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
+                    if self.pv > 0:
+                        sprite = self.texture.get_image(taille, [255, 0, 255])
+                        return [sprite, screen_x, taille]
+                    else:
+                        sprite = self.texture_mort.get_image(taille, [255, 0, 255])
+                        return [sprite, screen_x, taille]
 
     def tir(self, ppos, pang):
         a = math.tan(pang)
         c = ppos.y - a * ppos.x
-        distance = abs((a * self.pos.x - self.pos.y + c)/math.sqrt(a**2+1))
+        distance = abs((a * self.pos.x - self.pos.y + c) / math.sqrt(a ** 2 + 1))
+        diff = correction_ang(pang - math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x))
 
-        if distance < 20:
-            self.state = 2
+        if abs(diff) > math.pi / 2 and distance < 20:
+            self.pv -= 1
 
 
 def dist(sx, sy, ex, ey):
