@@ -7,14 +7,14 @@ from texture import *
 
 BLACK = [0, 0, 0]
 
-
 class Player:
     def __init__(self):
+        self.carte = []
         self.pos = pygame.Vector2(100, 100)
         self.pos_z = 32
         self.angle = 0
         self.speed = 300
-        self.pv = 10
+        self.pv = 100
         self.tirer = 0
         self.mouse_x = get_mouse_delta()
         self.dx = math.cos(self.angle) * self.speed
@@ -38,9 +38,9 @@ class Player:
 
     def changer_niv(self, level):
         self.pos = pygame.Vector2(100, 100)
-        if len(niveau)<level-1:
-            return False
-        self.niveau_actuel = 0
+        if level > 1:
+            return True
+        self.niveau_actuel = level
         self.carte = niveau[self.niveau_actuel][0]
         self.niveau_actuel = level
         self.carte_objet = niveau[self.niveau_actuel][1]
@@ -60,7 +60,8 @@ class Player:
                     case 3:
                         self.object.append(enemy.Object(i * 64 + 32, j * 64 + 32, 'resource/piller.png'))
 
-        return True
+        return False
+
 
     def update(self, dt):
         self.mouse_x = get_mouse_delta()
@@ -181,7 +182,9 @@ class Player:
         if keys[pygame.K_SPACE] and self.tirer > 10:
             self.tirer = 0
             for mechant in self.mechants:
-                mechant.tir(self.pos, self.angle)
+                tir = mechant.tir(self.pos, self.angle)
+                if tir:
+                    break
 
     def calcul_mur(self):
         """
@@ -240,12 +243,12 @@ class Player:
                 ry = self.pos.y
                 rx = self.pos.x
 
-            while dof < 10:
+            while dof < 100:
                 mx = int(rx / tille)
                 my = int(ry / tille)
                 if 0 <= mx < cartex and 0 <= my < cartey:
                     if self.carte[my - ch][mx] > 0:
-                        dof = 10
+                        dof = 100
                         hx = rx
                         hy = ry
                         disth = dist(self.pos.x, self.pos.y, hx, hy)
@@ -255,7 +258,7 @@ class Player:
                         ry += yo
                         dof += 1
                 else:
-                    dof = 12
+                    dof = 100
 
             # ___________________________________________________________________________________________________
             # mur vertical                                                                                      |
@@ -290,12 +293,12 @@ class Player:
                 rx = self.pos.x
                 ry = self.pos.y
 
-            while dof < 10:
+            while dof < 100:
                 mx = int(rx / tille)
                 my = int(ry / tille)
                 if 0 <= mx < cartex and 0 <= my < cartey:
                     if self.carte[my][mx - cv] > 0:
-                        dof = 10
+                        dof = 100
                         vx = rx
                         vy = ry
                         distv = dist(self.pos.x, self.pos.y, vx, vy)
@@ -305,7 +308,7 @@ class Player:
                         ry += yo
                         dof += 1
                 else:
-                    dof = 10
+                    dof = 100
 
             # garde-les valeurs du mur le plus proche
             p = 0
@@ -353,14 +356,18 @@ class Player:
             screen.blit(texture, (1200 - r, lineo))
 
         param_sprite = []
-        pv_total = 0
 
-        for mechant in self.mechants:
-            param_sprite.append(mechant.calcul(screen, param, self.pos, self.angle))
-            pv_total += mechant.pv
+        for mech in self.mechants:
+            param_sprite.append(mech.calcul(screen, param, self.pos, self.angle))
         
-        for objet in self.object:
-            param_sprite.append(objet.calcul(screen, param, self.pos, self.angle))
+        for obj in self.object:
+            param_sprite.append(obj.calcul(screen, param, self.pos, self.angle))
+
+        temp = []
+        for i in range(len(self.mechants)):
+            if self.mechants[i].pv > 0:
+                temp.append(param_sprite[i])
+        param_sprite = temp
 
         temp = []
         for i in range(len(param_sprite)):
@@ -388,12 +395,16 @@ class Player:
         screen.blit(image, (540, 560))
 
         pygame.draw.rect(screen, [33, 59, 188], [0, 680, 1200, 40])
-        if pv_total <= 0:
+
+        if len(self.mechants) == 0:
             self.end = self.changer_niv(self.niveau_actuel + 1)
             if self.end:
-                self.pv = 100
+                self.pv = -33
             else:
-                self.pv = 10
+                self.pv = 100
+
+        elif len(self.mechants) < 5:
+            self.carte[5][8] = 0
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)

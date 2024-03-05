@@ -21,6 +21,10 @@ def update_fps():
     fps_text = font.render(fps, True, pygame.Color("coral"))
     return fps_text
 
+def interface(joueur):
+    point = font.render(str(joueur.pv), True, pygame.Color("coral"))
+    screen.blit(point, (10, 690))
+
 
 while running:
     # poll for events
@@ -35,14 +39,15 @@ while running:
 
     match state:
         case 0:
-           pass
+           player.draw(screen)
         case 1:
             player.update(dt)
             player.draw(screen)
             # affichage fps
             screen.blit(update_fps(), (10, 0))
+            interface(player)
         case 2:
-            player.draw(screen)
+            pass
 
     # flip() the display to put your work on screen
     pygame.display.flip()
@@ -52,7 +57,9 @@ while running:
         state = 1
     if keys[pygame.K_ESCAPE]:
         state = 2
-    if player.pv == 100:
+    if player.pv == -33:
+        state = 2
+    if player.pv == 0:
         state = 2
 
     # limits FPS to 60

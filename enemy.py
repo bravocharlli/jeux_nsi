@@ -43,19 +43,22 @@ class Enemy:
         self.texture = texture.Object(sprite)
         sprite = pygame.image.load(dead_path).convert_alpha()
         self.texture_mort = texture.Object(sprite)
-        self.pv = 10
+        self.pv = 3
         self.numero = numero
-        self.speed = 100 * numero
+        self.speed = 50 * numero
         self.angle = 0
         self.carte = carte
         self.dx = math.cos(self.angle) * self.speed
         self.dy = math.sin(self.angle) * self.speed
 
     def move(self, ppos, dt):
+        if self.pv <= 0:
+            return 0
         # calcul direction
-        self.angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x) + random.uniform(-0.2, 0.2)
-        self.dx = math.cos(self.angle) * self.speed
-        self.dy = math.sin(self.angle) * self.speed
+        self.angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x) + random.uniform(-0.4, 0.4)
+        if random.randint(0, 5) == 0:
+            self.dx = math.cos(self.angle) * self.speed
+            self.dy = math.sin(self.angle) * self.speed
 
         if self.angle < 0:
             self.angle += 2 * math.pi
@@ -64,7 +67,7 @@ class Enemy:
 
         distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
         # move
-        if 100 < distance or self.numero == 1:
+        if 100 * self.numero < distance or self.numero == 1:
             self.pos.x += self.dx * dt
             self.pos.y += self.dy * dt
 
@@ -91,14 +94,14 @@ class Enemy:
                 self.pos.y -= self.dy * dt
 
         if 100 < distance and self.numero == 1:
-            return 1
-        elif 100 < distance and self.numero == 2:
+            return random.randint(0, 200) == 1
+        elif 200 < distance and self.numero == 2:
             a = math.tan(self.angle)
             c = self.pos.y - a * self.pos.x
             distance = abs((a * ppos.x - ppos.y + c) / math.sqrt(a ** 2 + 1))
             diff = correction_ang(self.angle - math.atan2(self.pos.y - ppos.y, self.pos.x - ppos.x))
             if abs(diff) > math.pi / 2:
-                return random.randint(0, 5) == 1
+                return random.randint(0, 200) == 1
 
         return 0
 
@@ -117,7 +120,7 @@ class Enemy:
         if render:
             screen_x = 0.5 * 1200 * (1 - (math.tan(diff) / math.tan(math.pi / 6)))
 
-            if  0 < 1200 - int(screen_x) < len(param):
+            if 0 < 1200 - int(screen_x) < len(param):
                 # get distance
                 distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
 
@@ -138,6 +141,8 @@ class Enemy:
 
         if abs(diff) > math.pi / 2 and self.pv > 0:
             self.pv -= 1
+            return True
+        return False
 
 
 def dist(sx, sy, ex, ey):
