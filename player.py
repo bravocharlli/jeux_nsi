@@ -34,8 +34,8 @@ class Player:
         self.sprite_sheet_pistolet_1 = Object(sprite_sheet_pistolet_1)
         self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
 
-    def changer_niv(self, niveau):
-        self.niveau = niveau
+    def changer_niv(self, level):
+        self.niveau = level
         self.carte = niveau[self.niveau][0]
         self.carte_objet = niveau[self.niveau][1]
 
