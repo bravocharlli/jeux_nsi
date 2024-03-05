@@ -37,6 +37,7 @@ class Player:
         self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
 
     def changer_niv(self, level):
+        self.angle = 0
         self.pos = pygame.Vector2(100, 100)
         if level > 1:
             return True
@@ -48,17 +49,17 @@ class Player:
         self.mechants = []
         self.object = []
         # load objetct + ennemy
-        for i in range(len(self.carte_objet)):
-            for j in range(len(self.carte_objet)):
+        for i in range(cartey):
+            for j in range(cartex):
                 match carte_objet[i][j]:
                     case 1:
-                        self.mechants.append(enemy.Enemy(i * 64 + 32, j * 64 + 32, 'resource/monstre1.png',
+                        self.mechants.append(enemy.Enemy(j * 64 + 32, i * 64 + 32, 'resource/monstre1.png',
                                                          'resource/monstre2_mort.png', 1, self.carte))
                     case 2:
-                        self.mechants.append(enemy.Enemy(i * 64 + 32, j * 64 + 32, 'resource/monstre2.png',
+                        self.mechants.append(enemy.Enemy(j * 64 + 32, i * 64 + 32, 'resource/monstre2.png',
                                                          'resource/monstre2_mort.png', 2, self.carte))
                     case 3:
-                        self.object.append(enemy.Object(i * 64 + 32, j * 64 + 32, 'resource/piller.png'))
+                        self.object.append(enemy.Object(j * 64 + 32, i * 64 + 32, 'resource/piller.png'))
 
         return False
 
@@ -364,12 +365,6 @@ class Player:
             param_sprite.append(obj.calcul(screen, param, self.pos, self.angle))
 
         temp = []
-        for i in range(len(self.mechants)):
-            if self.mechants[i].pv > 0:
-                temp.append(param_sprite[i])
-        param_sprite = temp
-
-        temp = []
         for i in range(len(param_sprite)):
             if param_sprite[i] is not None:
                 temp.append(param_sprite[i])
@@ -396,15 +391,22 @@ class Player:
 
         pygame.draw.rect(screen, [33, 59, 188], [0, 680, 1200, 40])
 
-        if len(self.mechants) == 0:
+        total = 0
+        for m in self.mechants:
+            if m.pv > 0:
+                total += 1
+
+        if total == 0:
             self.end = self.changer_niv(self.niveau_actuel + 1)
             if self.end:
                 self.pv = -33
             else:
                 self.pv = 100
 
-        elif len(self.mechants) < 5:
+        elif total <= 7:
             self.carte[5][8] = 0
+
+
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
