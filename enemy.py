@@ -28,9 +28,7 @@ class Object:
                 # get distance
                 distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
 
-                if (param[1200 - int(screen_x) - 1][4] > distance or
-                        param[1200 - int(screen_x)][4] > distance or
-                        param[1200 - int(screen_x) + 1][4] > distance):
+                if param[1200 - int(screen_x)][4] > distance:
                     taille = ((64 * 720) / distance)
 
                     sprite = self.texture.get_image(taille, [255, 0, 255])
@@ -71,10 +69,10 @@ class Enemy:
                     taille = ((64 * 720) / distance)
                     if self.pv > 0:
                         sprite = self.texture.get_image(taille, [255, 0, 255])
-                        return [sprite, screen_x, taille]
+                        return [sprite, screen_x, taille, self.pv]
                     else:
                         sprite = self.texture_mort.get_image(taille, [255, 0, 255])
-                        return [sprite, screen_x, taille]
+                        return [sprite, screen_x, taille, self.pv]
 
     def tir(self, ppos, pang):
         a = math.tan(pang)

@@ -1,7 +1,5 @@
 import math
-import matplotlib.image as mpimg
-import pygame.mouse
-
+import pygame
 import enemy
 from carte import *
 from texture import *
@@ -23,6 +21,8 @@ class Player:
         self.strafe_dx = math.cos(self.angle+(math.pi/2)) * self.speed * 0.75
         self.strafe_dy = math.sin(self.angle+(math.pi/2)) * self.speed * 0.75
 
+        self.changer_niv(0)
+
         # sprite_sheet c'est la texture du mur qu'il faut redécouper
         sprite_sheet_image_mur = pygame.image.load('resource/mur.png').convert_alpha()
         sprite_sheet_image_mur_mouse = pygame.image.load('resource/mur_mousse.png').convert_alpha()
@@ -34,19 +34,25 @@ class Player:
         self.sprite_sheet_pistolet_1 = Object(sprite_sheet_pistolet_1)
         self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
 
+    def changer_niv(self, niveau):
+        self.niveau = niveau
+        self.carte = niveau[self.niveau][0]
+        self.carte_objet = niveau[self.niveau][1]
 
         self.mechants = []
         self.object = []
         # load objetct + ennemy
-        for i in range(len(carte_objet)):
-            for j in range(len(carte_objet)):
+        for i in range(len(self.carte_objet)):
+            for j in range(len(self.carte_objet)):
                 match carte_objet[i][j]:
                     case 1:
-                        self.mechants.append(enemy.Enemy(i * 64, j * 64, 'resource/monstre1.png', 'resource/monstre2_mort.png'))
+                        self.mechants.append(enemy.Enemy(i * 64 + 32, j * 64 + 32, 'resource/monstre1.png',
+                                                         'resource/monstre2_mort.png'))
                     case 2:
-                        self.mechants.append(enemy.Enemy(i * 64, j * 64, 'resource/monstre2.png', 'resource/monstre2_mort.png'))
+                        self.mechants.append(enemy.Enemy(i * 64 + 32, j * 64 + 32, 'resource/monstre2.png',
+                                                         'resource/monstre2_mort.png'))
                     case 3:
-                        self.object.append(enemy.Object(i * 64, j * 64, 'resource/piller.png'))
+                        self.object.append(enemy.Object(i * 64 + 32, j * 64 + 32, 'resource/piller.png'))
 
     def update(self, dt):
         self.mouse_x = get_mouse_delta()
@@ -77,22 +83,24 @@ class Player:
             self.pos.x -= self.strafe_dx * dt
             self.pos.y -= self.strafe_dy * dt
 
+        """
         if self.mouse_x != 0:
             self.angle += self.mouse_x * dt
             self.dx = math.cos(self.angle) * self.speed
             self.dy = math.sin(self.angle) * self.speed
             self.strafe_dx = math.cos(self.angle + (math.pi / 2)) * self.speed * 0.75
             self.strafe_dy = math.sin(self.angle + (math.pi / 2)) * self.speed * 0.75
+        """
 
         if keys[pygame.K_LEFT]:
-            self.angle -= 3 * dt
+            self.angle -= 2 * dt
             self.dx = math.cos(self.angle) * self.speed
             self.dy = math.sin(self.angle) * self.speed
             self.strafe_dx = math.cos(self.angle + (math.pi / 2)) * self.speed * 0.75
             self.strafe_dy = math.sin(self.angle + (math.pi / 2)) * self.speed * 0.75
 
         if keys[pygame.K_RIGHT]:
-            self.angle += 3 * dt
+            self.angle += 2 * dt
             self.dx = math.cos(self.angle) * self.speed
             self.dy = math.sin(self.angle) * self.speed
             self.strafe_dx = math.cos(self.angle + (math.pi / 2)) * self.speed * 0.75
@@ -139,29 +147,29 @@ class Player:
         ipy_sub_strafe_yo = int((self.pos.y - strafe_yo) / tille)
 
         if keys[pygame.K_z]:
-            if carte[ipy][ipx_add_xo] > 0:
+            if self.carte[ipy][ipx_add_xo] > 0:
                 self.pos.x -= self.dx * dt
-            if carte[ipy_add_yo][ipx] > 0:
+            if self.carte[ipy_add_yo][ipx] > 0:
                 self.pos.y -= self.dy * dt
         if keys[pygame.K_s]:
-            if carte[ipy][ipx_sub_xo] > 0:
+            if self.carte[ipy][ipx_sub_xo] > 0:
                 self.pos.x += self.dx * dt
-            if carte[ipy_sub_yo][ipx] > 0:
+            if self.carte[ipy_sub_yo][ipx] > 0:
                 self.pos.y += self.dy * dt
 
         if keys[pygame.K_q]:
-            if carte[ipy][ipx_sub_strafe_xo] > 0:
+            if self.carte[ipy][ipx_sub_strafe_xo] > 0:
                 self.pos.x += self.strafe_dx * dt
-            if carte[ipy_sub_strafe_yo][ipx] > 0:
+            if self.carte[ipy_sub_strafe_yo][ipx] > 0:
                 self.pos.y += self.strafe_dy * dt
 
         if keys[pygame.K_d]:
-            if carte[ipy][ipx_add_strafe_xo] > 0:
+            if self.carte[ipy][ipx_add_strafe_xo] > 0:
                 self.pos.x -= self.strafe_dx * dt
-            if carte[ipy_add_strafe_yo][ipx] > 0:
+            if self.carte[ipy_add_strafe_yo][ipx] > 0:
                 self.pos.y -= self.strafe_dy * dt
 
-        if pygame.mouse.get_pressed()[0] and self.tirer > 10:
+        if keys[pygame.K_SPACE] and self.tirer > 10:
             self.tirer = 0
             for mechant in self.mechants:
                 mechant.tir(self.pos, self.angle)
@@ -227,12 +235,12 @@ class Player:
                 mx = int(rx / tille)
                 my = int(ry / tille)
                 if 0 <= mx < cartex and 0 <= my < cartey:
-                    if carte[my - ch][mx] > 0:
+                    if self.carte[my - ch][mx] > 0:
                         dof = 10
                         hx = rx
                         hy = ry
                         disth = dist(self.pos.x, self.pos.y, hx, hy)
-                        type_mur_h = carte[my - ch][mx]
+                        type_mur_h = self.carte[my - ch][mx]
                     else:
                         rx += xo
                         ry += yo
@@ -277,12 +285,12 @@ class Player:
                 mx = int(rx / tille)
                 my = int(ry / tille)
                 if 0 <= mx < cartex and 0 <= my < cartey:
-                    if carte[my][mx - cv] > 0:
+                    if self.carte[my][mx - cv] > 0:
                         dof = 10
                         vx = rx
                         vy = ry
                         distv = dist(self.pos.x, self.pos.y, vx, vy)
-                        type_mur_v = carte[my][mx - cv]
+                        type_mur_v = self.carte[my][mx - cv]
                     else:
                         rx += xo
                         ry += yo
@@ -363,10 +371,13 @@ class Player:
 
         pygame.draw.rect(screen, [0, 0, 0], [590, 350, 10, 10])
         if self.tirer < 10:
-            image = self.sprite_sheet_pistolet_1_fire.get_image(60, [255, 0, 255])
+            image = self.sprite_sheet_pistolet_1_fire.get_image(120, [255, 0, 255])
         else:
-            image = self.sprite_sheet_pistolet_1.get_image(60, [255, 0, 255])
-        screen.blit(image, (540, 660))
+            image = self.sprite_sheet_pistolet_1.get_image(120, [255, 0, 255])
+        screen.blit(image, (540, 560))
+
+        pygame.draw.rect(screen, [33, 59, 188], [0, 680, 1200, 40])
+
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
@@ -379,5 +390,6 @@ def get_mouse_delta():
     """
     x, y = pygame.mouse.get_pos()
     pygame.mouse.set_pos(600, 360)
+    x, y = pygame.mouse.get_pos()
     x = (x-600)/10
     return x
