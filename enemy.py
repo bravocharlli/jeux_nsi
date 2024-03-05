@@ -69,10 +69,10 @@ class Enemy:
                     taille = ((64 * 720) / distance)
                     if self.pv > 0:
                         sprite = self.texture.get_image(taille, [255, 0, 255])
-                        return [sprite, screen_x, taille, self.pv]
+                        return [sprite, screen_x, taille]
                     else:
                         sprite = self.texture_mort.get_image(taille, [255, 0, 255])
-                        return [sprite, screen_x, taille, self.pv]
+                        return [sprite, screen_x, taille] 
 
     def tir(self, ppos, pang):
         a = math.tan(pang)
