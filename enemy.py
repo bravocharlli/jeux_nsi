@@ -62,7 +62,7 @@ class Enemy:
         if self.pv <= 0:
             return 0
         distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
-        if distance > 350:
+        if distance > 400:
             return 0
 
         # calcul direction du méchant
@@ -77,7 +77,7 @@ class Enemy:
             self.angle -= 2 * math.pi
 
         # déplace le méchant
-        if 100 < distance or self.numero == 1:
+        if 150 < distance or self.numero == 1:
             self.pos.x += self.dx * dt
             self.pos.y += self.dy * dt
 
@@ -101,12 +101,15 @@ class Enemy:
             if self.carte[ipy_add_yo][ipx] > 0:
                 self.pos.y -= self.dy * dt
 
-        # déplace le méchant en fonction de sa catégorie
-        if 100 < distance and self.numero == 1:
+        # Inflige des dégâts
+        if 200 < distance and self.numero == 1:
             return random.randint(0, 100) == 1
-        elif 200 < distance and self.numero == 2:
+        elif 300 < distance and self.numero == 2:
             diff = correction_ang(self.angle - math.atan2(self.pos.y - ppos.y, self.pos.x - ppos.x))
-            if abs(diff) > math.pi / 2:
+            a = math.tan(self.angle)
+            c = self.pos.y - a * self.pos.x
+            distance_ligne = abs((a * ppos.x - ppos.y + c) / math.sqrt(a ** 2 + 1))
+            if abs(diff) > math.pi / 2 and distance_ligne < 30:
                 return random.randint(0, 100) == 1
 
         return 0
