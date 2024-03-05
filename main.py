@@ -14,6 +14,10 @@ dt = 0
 # init
 player = Player()
 font = pygame.font.SysFont("Arial", 18)
+win = pygame.image.load('resource/win.png')
+image = pygame.Surface((1200, 720)).convert_alpha()
+image.blit(win, (0, 0), (0, 0, 248, 216))
+image = pygame.transform.scale(image, (720, 1200))
 
 
 def update_fps():
@@ -47,7 +51,7 @@ while running:
             screen.blit(update_fps(), (10, 0))
             interface(player)
         case 2:
-            pass
+            screen.blit(image, (0, 0))
 
     # flip() the display to put your work on screen
     pygame.display.flip()
@@ -56,7 +60,7 @@ while running:
     if keys[pygame.K_RETURN]:
         state = 1
     if keys[pygame.K_ESCAPE]:
-        state = 2
+        state = 0
     if player.pv == -33:
         state = 2
     if player.pv == 0:

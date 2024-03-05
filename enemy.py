@@ -55,7 +55,7 @@ class Enemy:
         if self.pv <= 0:
             return 0
         distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
-        if distance > 320:
+        if distance > 350:
             return 0
 
         # calcul direction
@@ -71,7 +71,7 @@ class Enemy:
 
 
         # move
-        if 100 * self.numero < distance or self.numero == 1:
+        if 100 < distance or self.numero == 1:
             self.pos.x += self.dx * dt
             self.pos.y += self.dy * dt
 
@@ -135,7 +135,7 @@ class Enemy:
                         return [sprite, screen_x, taille]
                     else:
                         sprite = self.texture_mort.get_image(taille, [255, 0, 255])
-                        return [sprite, screen_x, taille] 
+                        return [sprite, screen_x, taille]
 
     def tir(self, ppos, pang):
         a = math.tan(pang)

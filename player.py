@@ -70,7 +70,7 @@ class Player:
         self.collision(dt)
 
         if self.tirer <= 10:
-            self.tirer += dt * 30
+            self.tirer += dt * 3
 
         temp = []
         for i in self.mechants:
@@ -397,7 +397,7 @@ class Player:
             screen.blit(sprite, (screen_x - taille / 2, 360 - taille / 2))
 
         pygame.draw.rect(screen, [0, 0, 0], [590, 350, 10, 10])
-        if self.tirer < 10:
+        if self.tirer < 3:
             image = self.sprite_sheet_pistolet_1_fire.get_image(120, [255, 0, 255])
         else:
             image = self.sprite_sheet_pistolet_1.get_image(120, [255, 0, 255])
