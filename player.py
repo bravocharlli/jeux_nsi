@@ -10,10 +10,11 @@ BLACK = [0, 0, 0]
 
 class Player:
     def __init__(self):
-        self.pos = pygame.Vector2(100, 100)
+        self.pos = pygame.Vector2(100, 100) 
         self.pos_z = 32
         self.angle = 0
         self.speed = 500
+        self.pv = 10
         self.tirer = 0
         self.mouse_x = get_mouse_delta()
         self.dx = math.cos(self.angle) * self.speed
@@ -35,6 +36,7 @@ class Player:
         self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
 
     def changer_niv(self, level):
+        self.pos = pygame.Vector2(100, 100)
         self.niveau_actuel = level
         self.carte = niveau[self.niveau_actuel][0]
         self.carte_objet = niveau[self.niveau_actuel][1]
@@ -344,10 +346,12 @@ class Player:
             screen.blit(texture, (1200 - r, lineo))
 
         param_sprite = []
+        pv_total = 0
 
         for mechant in self.mechants:
             param_sprite.append(mechant.calcul(screen, param, self.pos, self.angle))
-
+            pv_total += mechant.pv
+        
         for objet in self.object:
             param_sprite.append(objet.calcul(screen, param, self.pos, self.angle))
 
@@ -377,7 +381,9 @@ class Player:
         screen.blit(image, (540, 560))
 
         pygame.draw.rect(screen, [33, 59, 188], [0, 680, 1200, 40])
-
+        if pv_total <= 0:
+            self.changer_niv(self.niveau_actuel + 1)
+            self.pv = 10
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
