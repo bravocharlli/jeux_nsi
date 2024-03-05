@@ -14,7 +14,6 @@ class SpriteSheet:
         image = pygame.transform.scale(image, (taille_de_bande, hauteur))
         # enlève une certaine couleur
         image.set_colorkey(colour)
-
         return image
 
 
@@ -31,5 +30,4 @@ class Object:
         image = pygame.transform.scale(image, (taille, taille))
         # enlève une certaine couleur
         image.set_colorkey(colour)
-
         return image

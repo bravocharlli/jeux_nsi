@@ -1,8 +1,9 @@
 import pygame
 import texture
 import math
-from carte import *
+from carte import tille
 import random
+
 
 class Object:
     def __init__(self, x, y, path):
@@ -10,7 +11,7 @@ class Object:
         sprite = pygame.image.load(path).convert_alpha()
         self.texture = texture.Object(sprite)
 
-    def calcul(self, screen, param, ppos, pang):
+    def calcul(self, param, ppos, pang):
         # get angle
         angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x)
         diff = pang - angle
@@ -52,25 +53,30 @@ class Enemy:
         self.dy = math.sin(self.angle) * self.speed
 
     def move(self, ppos, dt):
+        """
+        Déplace le méchant en fonction de la position du joueur
+        :param ppos:
+        :param dt:
+        :return:
+        """
         if self.pv <= 0:
             return 0
         distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
         if distance > 350:
             return 0
 
-        # calcul direction
+        # calcul direction du méchant
         self.angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x) + random.uniform(-0.4, 0.4)
-        if random.randint(0, 5) == 0:
-            self.dx = math.cos(self.angle) * self.speed
-            self.dy = math.sin(self.angle) * self.speed
+        temp = random.randint(0, 5)
+        self.dx = math.cos(self.angle) * self.speed * temp
+        self.dy = math.sin(self.angle) * self.speed * temp
 
         if self.angle < 0:
             self.angle += 2 * math.pi
         if self.angle > 2 * math.pi:
             self.angle -= 2 * math.pi
 
-
-        # move
+        # déplace le méchant
         if 100 < distance or self.numero == 1:
             self.pos.x += self.dx * dt
             self.pos.y += self.dy * dt
@@ -89,27 +95,30 @@ class Enemy:
             ipy = int(self.pos.y / tille)
             ipx_add_xo = int((self.pos.x + xo) / tille)
             ipy_add_yo = int((self.pos.y + yo) / tille)
-            ipx_sub_xo = int((self.pos.x - xo) / tille)
-            ipy_sub_yo = int((self.pos.y - yo) / tille)
 
             if self.carte[ipy][ipx_add_xo] > 0:
                 self.pos.x -= self.dx * dt
             if self.carte[ipy_add_yo][ipx] > 0:
                 self.pos.y -= self.dy * dt
 
+        # déplace le méchant en fonction de sa catégorie
         if 100 < distance and self.numero == 1:
             return random.randint(0, 100) == 1
         elif 200 < distance and self.numero == 2:
-            a = math.tan(self.angle)
-            c = self.pos.y - a * self.pos.x
-            distance = abs((a * ppos.x - ppos.y + c) / math.sqrt(a ** 2 + 1))
             diff = correction_ang(self.angle - math.atan2(self.pos.y - ppos.y, self.pos.x - ppos.x))
             if abs(diff) > math.pi / 2:
                 return random.randint(0, 100) == 1
 
         return 0
 
-    def calcul(self, screen, param, ppos, pang):
+    def calcul(self, param, ppos, pang):
+        """
+        Calcule les paramètres pour pouvoirs afficher le mechant
+        :param param:
+        :param ppos:
+        :param pang:
+        :return:
+        """
         # get angle
         angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x)
         diff = pang - angle
@@ -138,6 +147,12 @@ class Enemy:
                         return [sprite, screen_x, taille]
 
     def tir(self, ppos, pang):
+        """
+        Détermine si le mechant a été touché
+        :param ppos:
+        :param pang:
+        :return:
+        """
         a = math.tan(pang)
         c = ppos.y - a * ppos.x
         distance = abs((a * self.pos.x - self.pos.y + c) / math.sqrt(a ** 2 + 1))
@@ -154,6 +169,11 @@ def dist(sx, sy, ex, ey):
 
 
 def correction_ang(ang):
+    """
+    Limite l'angle entre -pi et pi
+    :param ang:
+    :return:
+    """
     if ang < -math.pi:
         ang += 2 * math.pi
     if ang > math.pi:

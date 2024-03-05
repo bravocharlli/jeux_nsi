@@ -1,6 +1,4 @@
 # Example file showing a circle moving on screen
-import pygame
-
 from player import *
 
 # pygame setup
@@ -8,7 +6,7 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 720))
 clock = pygame.time.Clock()
 running = True
-state = 2
+state = 0
 dt = 0
 
 # init
@@ -20,30 +18,42 @@ image.blit(win, (0, 0), (0, 0, 248, 216))
 image = pygame.transform.scale(image, (1200, 720))
 
 
+# declaration fonction
 def update_fps():
+    """
+    Renvois le nombre de FPS
+    :return:
+    """
     fps = str(int(clock.get_fps()))
     fps_text = font.render(fps, True, pygame.Color("coral"))
     return fps_text
 
+
 def interface(joueur):
+    """
+    Affiche le nombre de PV
+    :param joueur: Class de player.py
+    :return:
+    """
     point = font.render(str(joueur.pv), True, pygame.Color("coral"))
     screen.blit(point, (10, 690))
 
 
+# boucle principale
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
+    # pour pouvoir fermer la fenêtre
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # fill the screen with a color to wipe away anything from last frame
+    # dessin du fond
     screen.fill([125, 125, 125])
     pygame.draw.rect(screen, [175, 175, 175], [0, 360, 1200, 360])
 
+    # boucle en fonction de l'état
     match state:
         case 0:
-           player.draw(screen)
+            player.draw(screen)
         case 1:
             player.update(dt)
             player.draw(screen)
@@ -53,7 +63,7 @@ while running:
         case 2:
             screen.blit(image, (0, 0))
 
-    # flip() the display to put your work on screen
+    # tout afficher à l'écran
     pygame.display.flip()
 
     keys = pygame.key.get_pressed()
@@ -66,9 +76,7 @@ while running:
     if player.pv == 0:
         state = 2
 
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
+    # limite les FPS à 60
     dt = clock.tick(60) / 1000
 
 pygame.quit()
