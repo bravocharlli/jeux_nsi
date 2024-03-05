@@ -14,7 +14,7 @@ class Player:
         self.pos_z = 32
         self.angle = 0
         self.speed = 300
-        self.pv = 100
+        self.pv = 50
         self.tirer = 0
         self.mouse_x = get_mouse_delta()
         self.dx = math.cos(self.angle) * self.speed
@@ -37,7 +37,7 @@ class Player:
         self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
 
     def changer_niv(self, level):
-        self.angle = 0
+        self.angle = math.pi / 2
         self.pos = pygame.Vector2(100, 100)
         if level > 1:
             return True
@@ -54,7 +54,7 @@ class Player:
                 match carte_objet[i][j]:
                     case 1:
                         self.mechants.append(enemy.Enemy(j * 64 + 32, i * 64 + 32, 'resource/monstre1.png',
-                                                         'resource/monstre2_mort.png', 1, self.carte))
+                                                         'resource/monstre1_mort.png', 1, self.carte))
                     case 2:
                         self.mechants.append(enemy.Enemy(j * 64 + 32, i * 64 + 32, 'resource/monstre2.png',
                                                          'resource/monstre2_mort.png', 2, self.carte))
@@ -70,7 +70,18 @@ class Player:
         self.collision(dt)
 
         if self.tirer <= 10:
-            self.tirer += dt * 50
+            self.tirer += dt * 30
+
+        temp = []
+        for i in self.mechants:
+            temp.append(dist_pygame(self.pos, i.pos))
+
+        for i in range(len(temp)):
+            for j in range(len(temp)-1):
+                if temp[j] > temp[j+1]:
+                    self.mechants[j], self.mechants[j+1] = self.mechants[j+1], self.mechants[j]
+
+
 
     def move(self, dt):
         """
@@ -180,12 +191,15 @@ class Player:
             if self.carte[ipy_add_strafe_yo][ipx] > 0:
                 self.pos.y -= self.strafe_dy * dt
 
+        temp = 0
         if keys[pygame.K_SPACE] and self.tirer > 10:
             self.tirer = 0
             for mechant in self.mechants:
                 tir = mechant.tir(self.pos, self.angle)
                 if tir:
-                    break
+                    temp += 1
+                    if temp == 3:
+                        break
 
     def calcul_mur(self):
         """
@@ -207,9 +221,9 @@ class Player:
             type_mur_h = 0
             type_mur_v = 0
 
-            # ___________________________________________________________________________________________________
+            # _____________________________________________________________________________________________________
             # mur horizontal                                                                                      |
-            # ____________________________________________________________________________________________________
+            # _____________________________________________________________________________________________________
 
             # init var
             dof = 0
@@ -401,7 +415,7 @@ class Player:
             if self.end:
                 self.pv = -33
             else:
-                self.pv = 100
+                self.pv = 50
 
         elif total <= 7:
             self.carte[5][8] = 0
@@ -411,6 +425,8 @@ class Player:
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
 
+def dist_pygame(vec1, vec2):
+    return math.sqrt((vec1.x - vec2.x) ** 2 + (vec1.y - vec2.y) ** 2)
 
 def get_mouse_delta():
     """

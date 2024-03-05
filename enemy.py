@@ -54,6 +54,10 @@ class Enemy:
     def move(self, ppos, dt):
         if self.pv <= 0:
             return 0
+        distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
+        if distance > 320:
+            return 0
+
         # calcul direction
         self.angle = math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x) + random.uniform(-0.4, 0.4)
         if random.randint(0, 5) == 0:
@@ -65,7 +69,7 @@ class Enemy:
         if self.angle > 2 * math.pi:
             self.angle -= 2 * math.pi
 
-        distance = dist(self.pos.x, self.pos.y, ppos.x, ppos.y)
+
         # move
         if 100 * self.numero < distance or self.numero == 1:
             self.pos.x += self.dx * dt
@@ -94,14 +98,14 @@ class Enemy:
                 self.pos.y -= self.dy * dt
 
         if 100 < distance and self.numero == 1:
-            return random.randint(0, 200) == 1
+            return random.randint(0, 100) == 1
         elif 200 < distance and self.numero == 2:
             a = math.tan(self.angle)
             c = self.pos.y - a * self.pos.x
             distance = abs((a * ppos.x - ppos.y + c) / math.sqrt(a ** 2 + 1))
             diff = correction_ang(self.angle - math.atan2(self.pos.y - ppos.y, self.pos.x - ppos.x))
             if abs(diff) > math.pi / 2:
-                return random.randint(0, 200) == 1
+                return random.randint(0, 100) == 1
 
         return 0
 
@@ -139,7 +143,7 @@ class Enemy:
         distance = abs((a * self.pos.x - self.pos.y + c) / math.sqrt(a ** 2 + 1))
         diff = correction_ang(pang - math.atan2(ppos.y - self.pos.y, ppos.x - self.pos.x))
 
-        if abs(diff) > math.pi / 2 and self.pv > 0:
+        if abs(diff) > math.pi / 2 and self.pv > 0 and distance < 30:
             self.pv -= 1
             return True
         return False
