@@ -8,7 +8,7 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 720))
 clock = pygame.time.Clock()
 running = True
-state = 0
+state = 2
 dt = 0
 
 # init
@@ -17,7 +17,7 @@ font = pygame.font.SysFont("Arial", 18)
 win = pygame.image.load('resource/win.png')
 image = pygame.Surface((1200, 720)).convert_alpha()
 image.blit(win, (0, 0), (0, 0, 248, 216))
-image = pygame.transform.scale(image, (720, 1200))
+image = pygame.transform.scale(image, (1200, 720))
 
 
 def update_fps():

@@ -70,7 +70,7 @@ class Player:
         self.collision(dt)
 
         if self.tirer <= 10:
-            self.tirer += dt * 3
+            self.tirer += dt * 30
 
         temp = []
         for i in self.mechants:
