@@ -35,9 +35,9 @@ class Player:
         self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
 
     def changer_niv(self, level):
-        self.niveau = level
-        self.carte = niveau[self.niveau][0]
-        self.carte_objet = niveau[self.niveau][1]
+        self.niveau_actuel = level
+        self.carte = niveau[self.niveau_actuel][0]
+        self.carte_objet = niveau[self.niveau_actuel][1]
 
         self.mechants = []
         self.object = []
