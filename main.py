@@ -8,7 +8,7 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 720))
 clock = pygame.time.Clock()
 running = True
-etat = 0
+state = 0
 dt = 0
 
 # init
@@ -33,25 +33,27 @@ while running:
     screen.fill([125, 125, 125])
     pygame.draw.rect(screen, [175, 175, 175], [0, 360, 1200, 360])
 
-    match etat:
+    match state:
         case 0:
-            player.draw(screen)
+           pass
         case 1:
             player.update(dt)
             player.draw(screen)
             # affichage fps
             screen.blit(update_fps(), (10, 0))
         case 2:
-            pass
+            player.draw(screen)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_RETURN]:
-        etat = 1
+        state = 1
     if keys[pygame.K_ESCAPE]:
-        etat = 0
+        state = 2
+    if player.pv == 100:
+        state = 2
 
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-

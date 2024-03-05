@@ -10,10 +10,10 @@ BLACK = [0, 0, 0]
 
 class Player:
     def __init__(self):
-        self.pos = pygame.Vector2(100, 100) 
+        self.pos = pygame.Vector2(100, 100)
         self.pos_z = 32
         self.angle = 0
-        self.speed = 500
+        self.speed = 300
         self.pv = 10
         self.tirer = 0
         self.mouse_x = get_mouse_delta()
@@ -22,7 +22,8 @@ class Player:
         self.strafe_dx = math.cos(self.angle+(math.pi/2)) * self.speed * 0.75
         self.strafe_dy = math.sin(self.angle+(math.pi/2)) * self.speed * 0.75
 
-        self.changer_niv(0)
+        self.niveau_actuel = 0
+        self.changer_niv(self.niveau_actuel)
 
         # sprite_sheet c'est la texture du mur qu'il faut redécouper
         sprite_sheet_image_mur = pygame.image.load('resource/mur.png').convert_alpha()
@@ -37,8 +38,11 @@ class Player:
 
     def changer_niv(self, level):
         self.pos = pygame.Vector2(100, 100)
-        self.niveau_actuel = level
+        if len(niveau)<level-1:
+            return False
+        self.niveau_actuel = 0
         self.carte = niveau[self.niveau_actuel][0]
+        self.niveau_actuel = level
         self.carte_objet = niveau[self.niveau_actuel][1]
 
         self.mechants = []
@@ -49,12 +53,14 @@ class Player:
                 match carte_objet[i][j]:
                     case 1:
                         self.mechants.append(enemy.Enemy(i * 64 + 32, j * 64 + 32, 'resource/monstre1.png',
-                                                         'resource/monstre2_mort.png'))
+                                                         'resource/monstre2_mort.png', 1, self.carte))
                     case 2:
                         self.mechants.append(enemy.Enemy(i * 64 + 32, j * 64 + 32, 'resource/monstre2.png',
-                                                         'resource/monstre2_mort.png'))
+                                                         'resource/monstre2_mort.png', 2, self.carte))
                     case 3:
                         self.object.append(enemy.Object(i * 64 + 32, j * 64 + 32, 'resource/piller.png'))
+
+        return True
 
     def update(self, dt):
         self.mouse_x = get_mouse_delta()
@@ -85,14 +91,12 @@ class Player:
             self.pos.x -= self.strafe_dx * dt
             self.pos.y -= self.strafe_dy * dt
 
-        """
         if self.mouse_x != 0:
             self.angle += self.mouse_x * dt
             self.dx = math.cos(self.angle) * self.speed
             self.dy = math.sin(self.angle) * self.speed
             self.strafe_dx = math.cos(self.angle + (math.pi / 2)) * self.speed * 0.75
             self.strafe_dy = math.sin(self.angle + (math.pi / 2)) * self.speed * 0.75
-        """
 
         if keys[pygame.K_LEFT]:
             self.angle -= 2 * dt
@@ -112,6 +116,9 @@ class Player:
             self.angle += 2 * math.pi
         if self.angle > 2 * math.pi:
             self.angle -= 2 * math.pi
+
+        for mechant in self.mechants:
+            self.pv -= mechant.move(self.pos, dt)
 
     def collision(self, dt):
         """
@@ -382,8 +389,11 @@ class Player:
 
         pygame.draw.rect(screen, [33, 59, 188], [0, 680, 1200, 40])
         if pv_total <= 0:
-            self.changer_niv(self.niveau_actuel + 1)
-            self.pv = 10
+            self.end = self.changer_niv(self.niveau_actuel + 1)
+            if self.end:
+                self.pv = 100
+            else:
+                self.pv = 10
 
 def dist(sx, sy, ex, ey):
     return math.sqrt((ex - sx) ** 2 + (ey - sy) ** 2)
@@ -396,6 +406,5 @@ def get_mouse_delta():
     """
     x, y = pygame.mouse.get_pos()
     pygame.mouse.set_pos(600, 360)
-    x, y = pygame.mouse.get_pos()
     x = (x-600)/10
     return x
