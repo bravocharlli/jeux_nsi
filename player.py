@@ -43,7 +43,7 @@ class Player:
         self.sprite_sheet_pistolet_1_fire = Object(sprite_sheet_pistolet_1_fire)
 
     def changer_niv(self, level):
-        """
+        """+
         Permet de basculer d'un niveau à l'autre
         :param level: niveau à choisir
         :return: renvois True ou False en fonction de si le niveau existe

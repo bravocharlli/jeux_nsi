@@ -2,6 +2,7 @@
 from player import *
 
 # pygame setup
+
 pygame.init()
 screen = pygame.display.set_mode((1200, 720))
 clock = pygame.time.Clock()
@@ -74,7 +75,7 @@ while running:
     if player.pv == -33:
         state = 2
     if player.pv == 0:
-        state = 2
+        state = 0
 
     # limite les FPS à 60
     dt = clock.tick(60) / 1000
