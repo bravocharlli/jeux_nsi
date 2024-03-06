@@ -65,7 +65,7 @@ class Player:
         # load object + enemy
         for i in range(cartey):
             for j in range(cartex):
-                match carte_objet[i][j]:
+                match self.carte_objet[i][j]:
                     case 1:
                         self.mechants.append(enemy.Enemy(j * 64 + 32, i * 64 + 32, 'resource/monstre1.png',
                                                          'resource/monstre1_mort.png', 1, self.carte))
